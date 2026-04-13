@@ -6,7 +6,7 @@ This repository contains the code, data, models, and published paper for a workf
 
 The final paper is included in this repository:
 
-**[paper/MLPUAV-SPIE_V1.pdf](paper/MLPUAV-SPIE_V1.pdf)**
+**[paper/MLPUAV-SPIE.pdf](paper/MLPUAV-SPIE.pdf)**
 
 ## Project Structure
 
