@@ -1,17 +1,36 @@
-# Drone Tracking: 3D Coordinate Conversion from YOLO Predictions
+# UAV localization from stereo camera detections
 
-This repository contains the code, data, models, and published paper for a workflow that converts 2D YOLO drone detections from a fisheye camera into 3D OptiTrack-aligned coordinates using a Multi-Layer Perceptron (MLP).
+Code from my work on *Machine learning-based UAV localization for
+under-structure sensor deployment in GPS-denied environments* (SPIE Smart
+Structures + NDE 2026), done in the ARTS Lab at the University of South
+Carolina.
+
+GPS does not work under a bridge, which is where these drones place sensors.
+Instead, two fixed cameras watch the drone, YOLO finds it in each frame, and a
+model maps those pixel positions to real 3D coordinates in millimeters. An
+OptiTrack motion-capture system provides the ground truth to train against.
+
+This repo holds the first model I built for that mapping, a small MLP, with its
+preprocessing, trained weights and figure scripts. The paper goes on to compare
+four classical regressors on the same mapping (polynomial, support vector,
+random forest, gradient boosting). SVR with an RBF kernel came out best, at
+16.48 mm RMSE under 5-fold cross-validation.
 
 ## Paper
 
-The final paper is included in this repository:
+Md Asifuzzaman Khan, Joud N. Satme, Mark Zheng, Samuel Tadamatla, Evan Phillips,
+Korebami Adebajo, Nolan Shute, Ryan Yount, and Austin R. J. Downey. "Machine
+learning-based UAV localization for under-structure sensor deployment in
+GPS-denied environments." *Sensors and Smart Structures Technologies for Civil,
+Mechanical, and Aerospace Systems 2026*, SPIE, April 2026.
+[doi:10.1117/12.3089966](https://doi.org/10.1117/12.3089966)
 
-**[paper/MLPUAV-SPIE.pdf](paper/MLPUAV-SPIE.pdf)**
+A copy is in this repo at [paper/MLPUAV-SPIE.pdf](paper/MLPUAV-SPIE.pdf).
 
 ## Project Structure
 
 ```
-Converting_YOLO_Coordinates_To_3D/
+mlp-yolo-to-3d/
 ├── data/
 │   ├── raw/            # Raw YOLO and OptiTrack spreadsheets
 │   ├── processed/      # Pixel-to-mm converted YOLO coordinates and curated model input
@@ -22,14 +41,14 @@ Converting_YOLO_Coordinates_To_3D/
 │   ├── preprocessing/  # align_and_format.py — pixel-to-mm conversion
 │   ├── modeling/       # train_model.py, predict_and_export.py
 │   └── plotting/       # plot_results.py
-├── making_figures/     # Self-contained folders for reproducing each paper figure
+├── making_figures/     # Self-contained folders, one per figure of the MLP results
 │   ├── Figure1_Drone/
 │   ├── Figure2_EPM/
 │   ├── Figure3_3D_Trajectory/
 │   ├── Figure4_Error_Distribution/
 │   ├── Figure5_Scatter_Plots/
 │   └── Figure6_Error_Over_Time/
-├── paper/              # Final published paper (PDF)
+├── paper/              # The published paper (PDF)
 ├── requirements.txt
 └── LICENSE.txt
 ```
@@ -48,9 +67,9 @@ Trains an MLP with RobustScaler normalization, batch normalization, dropout, L2 
 Loads the trained model and scalers, predicts 3D coordinates from `input_coordinates.xlsx`, writes `data/predictions/mlp_predictions.xlsx`, and prints MAE/RMSE per axis.
 
 ### 4. Plotting — `src/plotting/plot_results.py`
-Generates the scatter, 3D trajectory, error distribution, and error-over-time plots used in the paper. Outputs to `data/plots/`.
+Generates the scatter, 3D trajectory, error distribution, and error-over-time plots for the MLP. Outputs to `data/plots/`.
 
-## Reproducing Individual Paper Figures
+## Reproducing Individual Figures
 
 Each `making_figures/FigureX_*` folder is self-contained with its own data, model, scalers, and scripts. To regenerate a figure:
 
@@ -64,8 +83,8 @@ cd making_figures/Figure3_3D_Trajectory
 ## Installation
 
 ```bash
-git clone https://github.com/ARTS-Laboratory/Paper-2026-MLPUAV-SPIE.git
-cd Paper-2026-MLPUAV-SPIE
+git clone https://github.com/evanap003300/mlp-yolo-to-3d.git
+cd mlp-yolo-to-3d
 pip install -r requirements.txt
 ```
 
